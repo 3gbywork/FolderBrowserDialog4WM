@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using System.IO;
+using System.ComponentModel;
 
 namespace FolderBrowser
 {
@@ -8,20 +9,33 @@ namespace FolderBrowser
         public FolderBrowserDialog()
         {
             InitializeComponent();
+        }
 
+        protected override void OnLoad(System.EventArgs e)
+        {
+            base.OnLoad(e);
             PopulateTreeView();
         }
 
         /// <summary>
         /// 获取选择的目录的全路径
         /// </summary>
-        public string Path { get; set; }
+        public string SelectedPath { get; set; }
+        /// <summary>
+        /// 获取或设置开始浏览的根目录
+        /// </summary>
+        public string RootFolder { get; set; }
 
         private void PopulateTreeView()
         {
             TreeNode rootNode;
 
-            DirectoryInfo info = new DirectoryInfo(@"/");
+            if (string.IsNullOrEmpty(RootFolder))
+            {
+                RootFolder = "/";
+            }
+
+            DirectoryInfo info = new DirectoryInfo(RootFolder);
             if (info.Exists)
             {
                 rootNode = new TreeNode(info.Name);
@@ -55,7 +69,7 @@ namespace FolderBrowser
 
         private void button2_Click(object sender, System.EventArgs e)
         {
-            Path = "";
+            SelectedPath = "";
 
             this.Close();
         }
@@ -64,15 +78,15 @@ namespace FolderBrowser
         {
             if (treeView1.SelectedNode == null)
             {
-                Path = "";
+                SelectedPath = "";
             }
             else
             {
                 DirectoryInfo info = (DirectoryInfo)treeView1.SelectedNode.Tag;
-                Path = info.FullName;
+                SelectedPath = info.FullName;
             }
 
-            textBox1.Text = Path;
+            textBox1.Text = SelectedPath;
         }
     }
 }
